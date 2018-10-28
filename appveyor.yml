@@ -1,37 +1,49 @@
 version: '{branch}.{build}'
-os: Windows Server 2012 R2
 
-platform: x64
+configuration:
+  - Release
+  - Debug
 
-# There should be a better way to set-up a build matrix.
 environment:
   matrix:
-    - b_toolset: Windows7.1SDK
-      b_config: Debug
+    - platform: Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      CMAKE_TEMPLATE: Visual Studio 12 2013
+      PLATFORM_TOOLSET: v120
 
-    - b_toolset: Windows7.1SDK
-      b_config: Release
+    - platform: Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      CMAKE_TEMPLATE: Visual Studio 14 2015
+      PLATFORM_TOOLSET: v140
 
-    - b_toolset: v120
-      b_config: Debug
+    - platform: Win32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      CMAKE_TEMPLATE: Visual Studio 15 2017
+      PLATFORM_TOOLSET: v141
 
-    - b_toolset: v120
-      b_config: Release
+    - platform: x64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      CMAKE_TEMPLATE: Visual Studio 12 2013 Win64
+      PLATFORM_TOOLSET: v120
 
-    - b_toolset: v140
-      b_config: Debug
+    - platform: x64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      CMAKE_TEMPLATE: Visual Studio 14 2015 Win64
+      PLATFORM_TOOLSET: v140
 
-    - b_toolset: v140
-      b_config: Release
+    - platform: x64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      CMAKE_TEMPLATE: Visual Studio 15 2017 Win64
+      PLATFORM_TOOLSET: v141
 
 build_script:
-- cmake -T %b_toolset% -DCMAKE_BUILD_TYPE=%b_config% -DCMAKE_INSTALL_PREFIX=t_install .
-- cmake --build . --target install
+  - cmake -G %CMAKE_TEMPLATE% -DCMAKE_INSTALL_PREFIX=t_install .
+  - cmake --build . --config %configuration% --target install
 
 after_build:
-- cd t_install
-- 7z a ../json-c.win32.%b_toolset%.%b_config%.zip *
+  - cd t_install
+  - 7z a ../json-c.%platform%.%PLATFORM_TOOLSET%.%configuration%.zip *
 
 artifacts:
-- path: json-c.win32.%b_toolset%.%b_config%.zip
-  name: json-c.win32.%b_toolset%.%b_config%.zip
+  - path: json-c.%platform%.%PLATFORM_TOOLSET%.%configuration%.zip
+    name: json-c.%platform%.%PLATFORM_TOOLSET%.%configuration%.zip
