@@ -37,7 +37,7 @@ environment:
       PLATFORM_TOOLSET: v141
 
 build_script:
-  - cmake -G %CMAKE_TEMPLATE% -DCMAKE_INSTALL_PREFIX=t_install .
+  - cmake -G "%CMAKE_TEMPLATE%" -DCMAKE_INSTALL_PREFIX=t_install .
   - cmake --build . --config %configuration% --target install
 
 after_build:
